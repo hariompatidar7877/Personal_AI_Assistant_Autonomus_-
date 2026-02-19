@@ -1,0 +1,324 @@
+{
+  "name": "AI Email Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "request"
+            },
+            {
+              "name": "telegram_id"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cb5d78a2-8a55-408c-9938-4bea48c0b257",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.request }}",
+        "options": {
+          "systemMessage": "Tum ek intelligent AI Email Personal Assistant ho.\n\nTumhare paas ye capabilities hain:\n1. Gmail se email read karna\n2. Gmail se email send karna\n3. Email ka draft banana\n4. Google Sheets ke contact database se email ID fetch karna\n5. User ke natural language request ko samajhna\n\nContact Database Rule:\n- Agar user kisi person/company ka naam bole (jaise: “Rahul ko email bhejo”)\n- Aur email ID directly na de\n- Toh pehle Google Sheets Contact Database me search karo\n- Sheet se correct Gmail ID fetch karo\n- Uske baad hi email send ya draft banao\n- Agar contact na mile, toh email bhejne se pehle avoid karo aur safe assumption use karo\n\nAction Rules:\n- “email bhejo / send mail” → Send Email tool use karo\n- “draft bana do” → Create Draft tool use karo\n- “emails dikhao / read mails” → Get many messages tool use karo\n\nEmail Writing Rules:\n- Subject short, clear aur professional ho\n- Message polite, simple aur professional English me ho\n- No emojis inside emails\n- Kabhi bhi fake ya imaginary email ID mat banao\n\nOutput Structure (Mandatory):\n- To\n- Subject\n- Message\n\nGeneral Rules:\n- Agar request unclear ho toh best professional assumption lo\n- Unnecessary explanation mat do\n- Tumhara goal hai error-free, fast aur safe email handling\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "419e92cc-cd67-4e56-9391-d216e0f059ae",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        208
+      ],
+      "id": "bca98879-3b4f-4148-8a07-32554b627c58",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gIXl8WvSgKegkzOM",
+          "name": "OpenAi account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.telegram_id }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        208,
+        224
+      ],
+      "id": "9b3be59a-26d6-49a7-be19-5019477608ba",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        288
+      ],
+      "id": "ff3b19b3-21f3-4d7d-aea4-e5ae60219c99",
+      "name": "Send a message in Gmail",
+      "webhookId": "8648596d-2cf4-45c7-a342-be9a2a265ab9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "LEwinDBDzazdzkes",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        192
+      ],
+      "id": "1db37782-2dc2-426d-a084-d5bc56754fac",
+      "name": "Create a draft in Gmail",
+      "webhookId": "c40ef2c5-6fe6-4e2b-b13f-5b10ab3e3eca",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "LEwinDBDzazdzkes",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        288
+      ],
+      "id": "796bbd50-362c-41f0-9e22-573b0cd55473",
+      "name": "Get many messages in Gmail",
+      "webhookId": "4891b04c-15aa-4d27-a2fa-510e5af5b570",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "LEwinDBDzazdzkes",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "121e7423-525a-400d-9979-64063632ad19",
+              "name": "response",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        0
+      ],
+      "id": "03f705f9-2cc0-4906-86eb-d89ad6bd6ff0",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1VUrlIjfgB9KOUEI8G3aeHeU_s2RmYiqW83W18xJfYI8",
+          "mode": "list",
+          "cachedResultName": "Contact data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VUrlIjfgB9KOUEI8G3aeHeU_s2RmYiqW83W18xJfYI8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VUrlIjfgB9KOUEI8G3aeHeU_s2RmYiqW83W18xJfYI8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        512,
+        352
+      ],
+      "id": "8f002301-5fa8-4338-8b7a-88fbda04086b",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LD7y21c5DdoXQKvn",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "request": null,
+          "telegram_id": null
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a draft in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "c0ce2618-d723-4996-8d6b-d9d09a69682b",
+  "meta": {
+    "instanceId": "936682ee789a0bbc0cc308898bf1651f3a02ef3c07f1671777e6011f3bdb6ff5"
+  },
+  "id": "VbIcFknsZ58DP-1ldOP_-",
+  "tags": []
+}
