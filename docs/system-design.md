@@ -1,6 +1,6 @@
-# System Design
+ System Design
 
-## 1. Overview
+ 1. Overview
 
 The Agentic Personal AI Assistant is designed using a modular multi-agent architecture.  
 The system separates responsibilities into independent workflows that communicate through structured routing.
@@ -14,9 +14,9 @@ The primary goal of the architecture is:
 
 ---
 
-## 2. Architecture Style
+ 2. Architecture Style
 
-This project follows a **Modular Multi-Agent Architecture**.
+This project follows a ""Modular Multi-Agent Architecture"".
 
 There are three main components:
 
@@ -28,7 +28,7 @@ Each agent is implemented as an independent n8n workflow.
 
 ---
 
-## 3. Main Assistant (Orchestrator Layer)
+ 3. Main Assistant (Orchestrator Layer)
 
 The Main Assistant is responsible for:
 
@@ -38,7 +38,7 @@ The Main Assistant is responsible for:
 - Routing tasks to appropriate sub-agents
 - Verifying contact information before execution
 
-### Responsibilities
+ Responsibilities
 
 - Input handling
 - Intent classification
@@ -50,18 +50,18 @@ This layer ensures that no email or calendar action is executed without proper v
 
 ---
 
-## 4. Email Agent
+ 4. Email Agent
 
 The Email Agent handles all email-related operations.
 
-### Capabilities
+ Capabilities
 
 - Send emails
 - Create email drafts
 - Read multiple emails
 - Fetch contact information from Google Sheets
 
-### Design Principle
+ Design Principle
 
 Before sending an email:
 1. Contact name is validated via Google Sheets.
@@ -75,18 +75,18 @@ This prevents:
 
 ---
 
-## 5. Calendar Agent
+ 5. Calendar Agent
 
 The Calendar Agent manages scheduling operations.
 
-### Capabilities
+ Capabilities
 
 - Create events
 - Create events with attendees
 - Retrieve events
 - Automatically assign default 60-minute duration if not specified
 
-### Design Logic
+ Design Logic
 
 - If attendee is provided → use event with attendee tool
 - If no attendee is specified → create standard event
@@ -96,7 +96,7 @@ This ensures smooth scheduling without user friction.
 
 ---
 
-## 6. Data Flow
+ 6. Data Flow
 
 Step-by-step execution flow:
 
@@ -111,7 +111,7 @@ Step-by-step execution flow:
 
 ---
 
-## 7. Memory Handling
+ 7. Memory Handling
 
 The system uses session-based memory to:
 
@@ -123,7 +123,7 @@ Each Telegram user has an isolated session.
 
 ---
 
-## 8. Error Handling Strategy
+ 8. Error Handling Strategy
 
 The system avoids unsafe execution by:
 
@@ -138,7 +138,7 @@ If contact is not found:
 
 ---
 
-## 9. Scalability
+ 9. Scalability
 
 The architecture is scalable.
 
@@ -155,7 +155,7 @@ Because of modular design, each new capability can be implemented as a separate 
 
 ---
 
-## 10. Design Philosophy
+ 10. Design Philosophy
 
 This project demonstrates:
 
